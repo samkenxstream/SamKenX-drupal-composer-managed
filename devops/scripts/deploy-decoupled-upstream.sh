@@ -44,6 +44,9 @@ if [[ ${#commits[@]} -eq 0 ]] ; then
   exit 1
 fi
 
+# Copy patch file to tmp directory for use after checkout.
+cp devops/scripts/decoupledpatch.sh /tmp/decoupledpatch.sh
+
 # Cherry-pick commits not modifying circle config onto the release branch
 git checkout -b public --track public/main
 git pull
@@ -66,14 +69,8 @@ for commit in "${commits[@]}"; do
   # git commit --amend --no-edit --author='Pantheon Automation <bot@getpantheon.com>'
 done
 
-echo "Checking out decoupledpatch.sh from main branch."
-git checkout ${CIRCLE_BRANCH} -- devops/scripts/decoupledpatch.sh
-
 echo "Executing decoupledpatch.sh"
-. devops/scripts/decoupledpatch.sh
-
-echo "Removing decoupledpatch.sh"
-rm devops/scripts/decoupledpatch.sh
+. /tmp/decoupledpatch.sh
 
 git add .
 
