@@ -44,8 +44,10 @@ if [[ ${#commits[@]} -eq 0 ]] ; then
   exit 1
 fi
 
-# Copy patch file to tmp directory for use after checkout.
+# Copy patch and README file to tmp directory for use after checkout.
+echo "Copying decoupledpatch and decoupledREADME to /tmp for use later."
 cp devops/scripts/decoupledpatch.sh /tmp/decoupledpatch.sh
+cp devops/files/decoupledREADME.md /tmp/decoupledREADME.md
 
 # Cherry-pick commits not modifying circle config onto the release branch
 git checkout -b public --track public/main
@@ -71,6 +73,9 @@ done
 
 echo "Executing decoupledpatch.sh"
 . /tmp/decoupledpatch.sh
+
+echo "Copying README to docroot."
+cp /tmp/decoupledREADME.md ./README.md
 
 git add .
 
