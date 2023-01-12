@@ -12,6 +12,9 @@ set -euo pipefail
 
 git remote add public "$UPSTREAM_REPO_REMOTE_URL"
 git fetch public
+
+git remote add drupal-10-start "git@github.com:pantheon-upstreams/drupal-10-composer-managed.git"
+
 git checkout "${CIRCLE_BRANCH}"
 
 echo
@@ -76,10 +79,18 @@ echo
 # Push to the public repository
 git push public public:main
 
-git checkout $CIRCLE_BRANCH
-
 # update the release-pointer
 git tag -f -m 'Last commit set on upstream repo' release-pointer HEAD
 
 # Push release-pointer
 git push -f origin release-pointer
+
+# run a php script to update this project to the drupal 10 start state
+# put ^10 in the relevant places in composer.json
+php devops/scripts/apply_drupal10_composer_changes.php
+
+git commit -am "Create new sites with Drupal 10"
+
+git push --force drupal-10-start public:main
+
+git checkout $CIRCLE_BRANCH
