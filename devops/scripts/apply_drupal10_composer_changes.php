@@ -2,49 +2,70 @@
 
 // Update pantheon.upstream.yml
 $pantheonYmlContents = file_get_contents("pantheon.upstream.yml");
-$pantheonYml = yaml_parse($pantheonYmlContents);
-$originalPantheonYml = $pantheonYml;
 
-print_r($pantheonYml);
+// echo "== YML ==\n";
+// echo $pantheonYmlContents;
+// echo "== End YML ==\n\n";
 
-if($pantheonYml['web_docroot'] != true) {
-  print "Update pantheon.upstream.yml web_docroot to true\n";
-  $pantheonYml['web_docroot'] = true;
-} else {
-  print "pantheon.upstream.yml web_docroot is already true\n";
-}
-
-if($pantheonYml['php_version'] != '8.2') {
+if(preg_match('#^\s*php_version:#m', $pantheonYmlContents)) {
   print "Update pantheon.upstream.yml php_version to 8.2\n";
-  $pantheonYml['php_version'] = '8.2';
+  $pantheonYmlContents = preg_replace('#^\s*php_version:.*#m', 'php_version: 8.2', $pantheonYmlContents);
 } else {
-  print "pantheon.upstream.yml php_version is already 8.2\n";
+  print "Add pantheon.upstream.yml php_version 8.2\n";
+  $pantheonYmlContents = preg_replace('#^web_docroot:.*#m', "php_version: 8.2\n\nweb_docroot:", $pantheonYmlContents);
 }
 
-if(serialize($pantheonYml) == serialize($originalPantheonYml)) {
-  echo "No changes to pantheon.upstream.yml\n";
-  return;
-}
+// echo "== YML ==\n";
+// echo $pantheonYmlContents;
+// echo "== End YML ==\n\n";
 
-$prettyYml = yaml_emit($array, YAML_UTF8_ENCODING, YAML_LN_BREAK);
-echo "== YML ==\n";
-echo $prettyYml;
-echo "== End YML ==\n";
+file_put_contents("pantheon.upstream.yml", $pantheonYmlContents);
 
-$prettyYml = preg_replace('#^(\s+)(\w+):#m', '$1$2:', $prettyYml);
+/*
+ * I put all this effort into yaml library stuff, but it's not available lol
+ *
+*/
+// $pantheonYml = yaml_parse($pantheonYmlContents);
+// $originalPantheonYml = $pantheonYml;
 
-echo "== Pretty YML ==\n";
-echo $prettyYml;
-echo "== End Pretty YML ==\n";
+// print_r($pantheonYml);
+
+// if($pantheonYml['web_docroot'] != true) {
+//   print "Update pantheon.upstream.yml web_docroot to true\n";
+//   $pantheonYml['web_docroot'] = true;
+// } else {
+//   print "pantheon.upstream.yml web_docroot is already true\n";
+// }
+
+// if($pantheonYml['php_version'] != '8.2') {
+//   print "Update pantheon.upstream.yml php_version to 8.2\n";
+//   $pantheonYml['php_version'] = '8.2';
+// } else {
+//   print "pantheon.upstream.yml php_version is already 8.2\n";
+// }
+
+// if(serialize($pantheonYml) == serialize($originalPantheonYml)) {
+//   echo "No changes to pantheon.upstream.yml\n";
+//   return;
+// }
+
+// $prettyYml = yaml_emit($pantheonYml, YAML_UTF8_ENCODING, YAML_LN_BREAK);
+// echo "== YML ==\n";
+// echo $prettyYml;
+// echo "== End YML ==\n\n";
+
+// $prettyYml = preg_replace('#^(\s+)(\w+):#m', '$1$2:', $prettyYml);
+
+// echo "== Pretty YML ==\n";
+// echo $prettyYml;
+// echo "== End Pretty YML ==\n\n";
 
 
-
-exit;
 
 // Update composer.json
 $composerJsonContents = file_get_contents("composer.json");
 $composerJson = json_decode($composerJsonContents, true);
-
+$originalComposerJson = $composerJson;
 
 // D10 versions
 if($composerJson["require"]["drupal/core-composer-scaffold"] != "^10") {
