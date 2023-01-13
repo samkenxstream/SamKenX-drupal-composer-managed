@@ -13,7 +13,7 @@ set -euo pipefail
 git remote add public "$UPSTREAM_REPO_REMOTE_URL"
 git fetch public
 
-git remote add drupal-10-start "git@github.com:pantheon-upstreams/drupal-10-composer-managed.git"
+git remote add drupal-10-start "git@github.com:namespacebrian/drupal-10-composer-managed-upstream.git"
 
 git checkout "${CIRCLE_BRANCH}"
 
