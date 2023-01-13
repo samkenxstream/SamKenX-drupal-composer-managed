@@ -30,13 +30,6 @@ file_put_contents("pantheon.upstream.yml", $pantheonYmlContents);
 
 // print_r($pantheonYml);
 
-// if($pantheonYml['web_docroot'] != true) {
-//   print "Update pantheon.upstream.yml web_docroot to true\n";
-//   $pantheonYml['web_docroot'] = true;
-// } else {
-//   print "pantheon.upstream.yml web_docroot is already true\n";
-// }
-
 // if($pantheonYml['php_version'] != '8.2') {
 //   print "Update pantheon.upstream.yml php_version to 8.2\n";
 //   $pantheonYml['php_version'] = '8.2';
