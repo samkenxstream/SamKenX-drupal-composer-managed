@@ -1,28 +1,28 @@
 <?php
 
-// Update pantheon.yml
-$pantheonYmlContents = file_get_contents("pantheon.yml");
+// Update pantheon.upstream.yml
+$pantheonYmlContents = file_get_contents("pantheon.upstream.yml");
 $pantheonYml = yaml_parse($pantheonYmlContents);
 $originalPantheonYml = $pantheonYml;
 
 print_r($pantheonYml);
 
 if($pantheonYml['web_docroot'] != true) {
-  print "Update pantheon.yml web_docroot to true\n";
+  print "Update pantheon.upstream.yml web_docroot to true\n";
   $pantheonYml['web_docroot'] = true;
 } else {
-  print "pantheon.yml web_docroot is already true\n";
+  print "pantheon.upstream.yml web_docroot is already true\n";
 }
 
 if($pantheonYml['php_version'] != '8.2') {
-  print "Update pantheon.yml php_version to 8.2\n";
+  print "Update pantheon.upstream.yml php_version to 8.2\n";
   $pantheonYml['php_version'] = '8.2';
 } else {
-  print "pantheon.yml php_version is already 8.2\n";
+  print "pantheon.upstream.yml php_version is already 8.2\n";
 }
 
 if(serialize($pantheonYml) == serialize($originalPantheonYml)) {
-  echo "No changes to pantheon.yml\n";
+  echo "No changes to pantheon.upstream.yml\n";
   return;
 }
 
