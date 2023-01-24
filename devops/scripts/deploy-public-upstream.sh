@@ -8,12 +8,15 @@ ssh -T git@github.com
 # Fail fast on any future errors.
 set -euo pipefail
 
+# copy our script so it's available to run after we change branches
+cp devops/scripts/apply_drupal10_composer_changes.php /tmp
+
 . devops/scripts/commit-type.sh
 
 git remote add public "$UPSTREAM_REPO_REMOTE_URL"
 git fetch public
 
-git remote add drupal-10-start "git@github.com:namespacebrian/drupal-10-composer-managed-upstream.git"
+git remote add drupal-10-start "$DRUPAL_10_REPO_REMOTE_URL"
 
 git checkout "${CIRCLE_BRANCH}"
 
@@ -51,10 +54,12 @@ fi
 git checkout -b public --track public/main
 git pull
 
+set +e
 if [[ "$CIRCLECI" != "" ]]; then
   git config --global user.email "bot@getpantheon.com"
   git config --global user.name "Pantheon Automation"
 fi
+set -e
 
 for commit in "${commits[@]}"; do
   if [[ -z "$commit" ]] ; then
@@ -87,7 +92,7 @@ git push -f origin release-pointer
 
 # run a php script to update this project to the drupal 10 start state
 # put ^10 in the relevant places in composer.json
-php devops/scripts/apply_drupal10_composer_changes.php
+php /tmp/apply_drupal10_composer_changes.php
 
 git commit -am "Create new sites with Drupal 10"
 
