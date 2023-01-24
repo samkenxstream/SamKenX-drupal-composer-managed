@@ -36,16 +36,6 @@ if($composerJson["require-dev"]["drupal/core-dev"] != "^10") {
   $composerJson["require-dev"]["drupal/core-dev"] = "^10";
 }
 
-if(! isset($composerJson['config']['allow-plugins']['phpstan/extension-installer'])) {
-  print "Allow phpstan/extension-installer in preparation for Drupal 10\n";
-  $composerJson['config']['allow-plugins']['phpstan/extension-installer'] = true;
-}
-
-if($composerJson['config']['platform']['php'] != '8.2.0') {
-  print "Update PHP platform to 8.2.0\n";
-  $composerJson['config']['platform']['php'] = '8.2.0';
-}
-
 // leave $composerJson['name'] and description alone - site will switch to drupal-composer-managed
 
 if(serialize($composerJson) == serialize($originalComposerJson)) {
