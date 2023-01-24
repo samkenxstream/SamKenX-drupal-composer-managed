@@ -3,17 +3,9 @@
 // Update pantheon.upstream.yml
 $pantheonYmlContents = file_get_contents("pantheon.upstream.yml");
 
-// echo "== YML ==\n";
-// echo $pantheonYmlContents;
-// echo "== End YML ==\n\n";
 
-if(preg_match('#^\s*php_version:#m', $pantheonYmlContents)) {
-  print "Update pantheon.upstream.yml php_version to 8.2\n";
-  $pantheonYmlContents = preg_replace('#^\s*php_version:.*#m', 'php_version: 8.2', $pantheonYmlContents);
-} else {
-  print "Add pantheon.upstream.yml php_version 8.2\n";
-  $pantheonYmlContents = preg_replace('#^web_docroot:.*#m', "php_version: 8.2\n\nweb_docroot:", $pantheonYmlContents);
-}
+print "Update pantheon.upstream.yml php_version to 8.2\n";
+$pantheonYmlContents = preg_replace('#^\s*php_version:.*#m', 'php_version: 8.2', $pantheonYmlContents);
 
 file_put_contents("pantheon.upstream.yml", $pantheonYmlContents);
 
@@ -55,7 +47,6 @@ if($composerJson['config']['platform']['php'] != '8.2.0') {
 }
 
 // leave $composerJson['name'] and description alone - site will switch to drupal-composer-managed
-
 
 if(serialize($composerJson) == serialize($originalComposerJson)) {
   echo "No changes to composer.json\n";
