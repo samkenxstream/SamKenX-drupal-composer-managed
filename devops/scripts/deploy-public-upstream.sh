@@ -16,8 +16,6 @@ cp devops/scripts/apply_drupal10_composer_changes.php /tmp
 git remote add public "$UPSTREAM_REPO_REMOTE_URL"
 git fetch public
 
-git remote add drupal-10-start "$DRUPAL_10_REPO_REMOTE_URL"
-
 git checkout "${CIRCLE_BRANCH}"
 
 echo
@@ -96,6 +94,11 @@ php /tmp/apply_drupal10_composer_changes.php
 
 git commit -am "Create new sites with Drupal 10"
 
-git push --force drupal-10-start public:main
+# This code is a bit of a hack but it avoids rewriting history on the D10 upstream
+git clone "$DRUPAL_10_REPO_REMOTE_URL" /tmp/drupal-10-start
+mv -f /tmp/drupal-10-start/.git .git
+echo "Committing changes"
+git commit -F /tmp/commit_message --author='Pantheon Automation <bot@getpantheon.com>'
+git push "$DRUPAL_10_REPO_REMOTE_URL" main
 
 git checkout $CIRCLE_BRANCH
