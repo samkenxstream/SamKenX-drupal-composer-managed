@@ -38,13 +38,6 @@ if($composerJson["require-dev"]["drupal/core-dev"] != "^10") {
 
 // leave $composerJson['name'] and description alone - site will switch to drupal-composer-managed
 
-if(serialize($composerJson) == serialize($originalComposerJson)) {
-  echo "No changes to composer.json\n";
-  return;
-}
-
 // Write the updated composer.json file
 $prettyJson = json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-$prettyJson = preg_replace('#": \[\s*("[^"]*")\s*\]#m', '": [\1]', $prettyJson);
-
 file_put_contents("composer.json", $prettyJson . PHP_EOL);
