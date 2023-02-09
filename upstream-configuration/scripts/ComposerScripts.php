@@ -89,21 +89,56 @@ class ComposerScripts {
     $updatedPlatformPhpVersion = static::bestPhpPatchVersion($pantheonPhpVersion);
     if ((substr($platformPhpVersion, 0, strlen($pantheonPhpVersion)) != $pantheonPhpVersion) && !empty($updatedPlatformPhpVersion)) {
       $io->write("<info>Setting platform.php from '$platformPhpVersion' to '$updatedPlatformPhpVersion' to conform to pantheon php version.</info>");
-
       $composerJson['config']['platform']['php'] = $updatedPlatformPhpVersion;
     }
-    
-    // Remove our upstream convenience scripts, if the user has not removed them.
-    if (isset($composerJson['scripts']['upstream-require'])) {
-      unset($composerJson['scripts']['upstream-require']);
+
+    // add our post-update-cmd hook if it's not already present
+    $our_hook = 'DrupalComposerManaged\\ComposerScripts::postUpdate';
+    // if does not exist, add as an empty arry
+    if(! isset($composerJson['scripts']['post-update-cmd'])) {
+      $composerJson['scripts']['post-update-cmd'] = [];
     }
-    // Also remove it from the scripts-descriptions section.
-    if (isset($composerJson['scripts-descriptions']['upstream-require'])) {
-      unset($composerJson['scripts-descriptions']['upstream-require']);
+
+    // if exists and is a string, convert to a single-item array (n.b. do not actually need the if exists check because we just assured that it does)
+    if(is_string($composerJson['scripts']['post-update-cmd'])) {
+      $composerJson['scripts']['post-update-cmd'] = [$composerJson['scripts']['post-update-cmd']];
     }
-    // This may have been the last item in the scripts-descriptions section, so remove it.
-    if (isset($composerJson['scripts-descriptions']) && empty($composerJson['scripts-descriptions'])) {
-      unset($composerJson['scripts-descriptions']);
+
+    // if exists and is an array and does not contain our hook, add our hook (again, only the last check is needed)
+    if(! in_array($our_hook, $composerJson['scripts']['post-update-cmd'])) {
+      $io->write("<info>Adding post-update-cmd hook to composer.json</info>");
+      $composerJson['scripts']['post-update-cmd'][] = $our_hook;
+
+      // We're making our other changes if and only if we're already adding our hook
+      // so that we don't overwrite customer's changes if they undo these changes.
+      // We don't want customers to remove our hook, so it will be re-added if they remove it.
+
+      // Remove our upstream convenience scripts, if the user has not removed them.
+      if (isset($composerJson['scripts']['upstream-require'])) {
+        unset($composerJson['scripts']['upstream-require']);
+      }
+
+      // Also remove it from the scripts-descriptions section.
+      if (isset($composerJson['scripts-descriptions']['upstream-require'])) {
+        unset($composerJson['scripts-descriptions']['upstream-require']);
+      }
+
+      // This may have been the last item in the scripts-descriptions section, so remove it.
+      if (isset($composerJson['scripts-descriptions']) && empty($composerJson['scripts-descriptions'])) {
+        unset($composerJson['scripts-descriptions']);
+      }
+
+      // enable patching if it isn't already enabled
+      if(! isset($composerJson['extra']['enable-patching'])) {
+        $io->write("<info>Setting enable-patching to true</info>");
+        $composerJson['extra']['enable-patching'] = true;
+      }
+
+      // allow phpstan/extension-installer in preparation for Drupal 10
+      if(! isset($composerJson['config']['allow-plugins']['phpstan/extension-installer'])) {
+        $io->write("<info>Allow phpstan/extension-installer in preparation for Drupal 10</info>");
+        $composerJson['config']['allow-plugins']['phpstan/extension-installer'] = true;
+      }
     }
 
     if(serialize($composerJson) == serialize($originalComposerJson)) {
