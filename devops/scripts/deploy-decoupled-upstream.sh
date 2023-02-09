@@ -32,8 +32,18 @@ for commit in $newcommits; do
   fi
 
   if [[ $commit_type == "mixed" ]] ; then
-    2>&1 echo "Commit ${commit} contains both release and nonrelease changes. Cannot proceed."
-    exit 1
+    2>&1 echo "Commit ${commit} contains both release and nonrelease changes. Skipping this commit."
+    echo "You may wish to ensure that nothing in this commit is meant for release."
+    delete=(${commit})
+    for remove in "${delete[@]}"; do
+      if (( ${#commits[@]} )); then
+        for i in "${commits[@]}"; do
+          if [[ ${commits[0]} = $remove ]]; then
+            unset 'commits[i]'
+          fi
+        done
+      fi
+    done
   fi
 done
 
@@ -64,7 +74,7 @@ for commit in "${commits[@]}"; do
   fi
   echo "Adding $commit:"
   git --no-pager log --format=%B -n 1 "$commit"
-  git cherry-pick -rn "$commit" 2>&1
+  git cherry-pick -rn -X theirs "$commit" 2>&1
   # Product request - single commit per release
   # The commit message from the last commit will be used.
   git log --format=%B -n 1 "$commit" > /tmp/commit_message
