@@ -10,8 +10,13 @@ set -euo pipefail
 
 . devops/scripts/commit-type.sh
 
-git remote add public "$UPSTREAM_DECOUPLED_REPO_REMOTE_URL"
-git fetch public
+# Copy patch and README file to tmp directory for use after checkout.
+echo "Copying decoupledpatch and decoupledREADME to /tmp for use later."
+cp devops/scripts/decoupledpatch.sh /tmp/decoupledpatch.sh
+cp devops/files/decoupledREADME.md /tmp/decoupledREADME.md
+
+git remote add decoupled "$UPSTREAM_DECOUPLED_REPO_REMOTE_URL"
+git fetch decoupled
 git checkout "${CIRCLE_BRANCH}"
 
 echo
@@ -54,11 +59,6 @@ if [[ ${#commits[@]} -eq 0 ]] ; then
   exit 1
 fi
 
-# Copy patch and README file to tmp directory for use after checkout.
-echo "Copying decoupledpatch and decoupledREADME to /tmp for use later."
-cp devops/scripts/decoupledpatch.sh /tmp/decoupledpatch.sh
-cp devops/files/decoupledREADME.md /tmp/decoupledREADME.md
-
 # Cherry-pick commits not modifying circle config onto the release branch
 git checkout -b public --track public/main
 git pull
@@ -96,7 +96,13 @@ echo
 echo "Releasing to upstream org"
 echo
 
-# Push to the public repository
-git push public public:main
+# Push to the decoupled repository
+git push decoupled decoupled:main
 
 git checkout $CIRCLE_BRANCH
+
+# update the decoupled-release-pointer
+git tag -f -m 'Last commit set on upstream repo' decoupled-release-pointer HEAD
+
+# Push decoupled-release-pointer
+git push -f origin decoupled-release-pointer
