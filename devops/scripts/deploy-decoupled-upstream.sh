@@ -60,7 +60,7 @@ if [[ ${#commits[@]} -eq 0 ]] ; then
 fi
 
 # Cherry-pick commits not modifying circle config onto the release branch
-git checkout -b public --track public/main
+git checkout -b decoupled --track decoupled/main
 git pull
 
 if [[ "$CIRCLECI" != "" ]]; then
