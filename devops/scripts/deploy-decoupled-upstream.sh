@@ -26,7 +26,7 @@ echo "-----------------------------------------------------------------------"
 echo
 
 # List commits between release-pointer and HEAD, in reverse
-newcommits=$(git log release-pointer..HEAD --reverse --pretty=format:"%h")
+newcommits=$(git log decoupled-release-pointer..HEAD --reverse --pretty=format:"%h")
 commits=()
 
 # Identify commits that should be released
