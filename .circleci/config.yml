@@ -5,6 +5,9 @@ executors:
   deployer:
     docker:
       - image: cimg/base:2020.12
+  php:
+    docker:
+      - image: cimg/php:8.1.14
 
 jobs:
   deploy-public-upstream:
@@ -63,6 +66,16 @@ jobs:
       - run:
           name: Run decoupledpatch.sh and copy commits to decoupled destination repo
           command: devops/scripts/deploy-decoupled-upstream.sh
+  unit-test:
+    executor: php
+    steps:
+      - checkout
+      - run:
+          name: Run unit tests
+          command: |
+              cd devops/phpunit
+              composer install
+              composer unit
   check-commits:
     executor: deployer
     steps:
@@ -92,9 +105,12 @@ workflows:
             branches:
               only:
                 - release
-  check-commits:
+  check:
     jobs:
-      - check-commits
-  check-patch:
-    jobs:
-      - check-patch
+      - unit-test
+      - check-commits:
+          requires:
+            - unit-test
+      - check-patch:
+          requires:
+            - unit-test
