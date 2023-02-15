@@ -101,6 +101,10 @@ class ComposerScripts {
     if (isset($composerJson['scripts-descriptions']['upstream-require'])) {
       unset($composerJson['scripts-descriptions']['upstream-require']);
     }
+    // This may have been the last item in the scripts-descriptions section, so remove it.
+    if (isset($composerJson['scripts-descriptions']) && empty($composerJson['scripts-descriptions'])) {
+      unset($composerJson['scripts-descriptions']);
+    }
 
     if(serialize($composerJson) == serialize($originalComposerJson)) {
       return;
