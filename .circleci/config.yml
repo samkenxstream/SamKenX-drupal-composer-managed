@@ -31,7 +31,7 @@ jobs:
       #   ssh-keygen -l -E md5 -f ed25519
       - add_ssh_keys:
           fingerprints:
-            - "d6:6c:3e:b6:92:36:04:fc:5a:23:1f:e2:9d:87:00:ef"
+            - "50:72:cc:79:5d:fa:9d:b9:83:40:af:e9:4a:37:4f:4b"
       - run:
           name: Copy commits to destination repo
           command: devops/scripts/deploy-public-upstream.sh
@@ -59,7 +59,7 @@ jobs:
       #   ssh-keygen -l -E md5 -f ed25519
       - add_ssh_keys:
           fingerprints:
-            - "d6:6c:3e:b6:92:36:04:fc:5a:23:1f:e2:9d:87:00:ef"
+            - "50:72:cc:79:5d:fa:9d:b9:83:40:af:e9:4a:37:4f:4b"
       - run:
           name: Run decoupledpatch.sh and copy commits to decoupled destination repo
           command: devops/scripts/deploy-decoupled-upstream.sh
