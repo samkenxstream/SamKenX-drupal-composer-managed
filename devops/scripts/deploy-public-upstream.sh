@@ -81,16 +81,13 @@ echo
 echo "Releasing to upstream org"
 echo
 
-# Push to the public repository
+# Push to the public (pantheon-upstreams/drupal-composer-managed) repository
 git push public public:main
 
-# update the release-pointer
-git tag -f -m 'Last commit set on upstream repo' release-pointer HEAD
 
-# Push release-pointer
-git push -f origin release-pointer
+### Prepare the drupal 10 start state upstream
 
-# run a php script to update this project to the drupal 10 start state
+# run a php script to update to the drupal 10 start state
 # put ^10 in the relevant places in composer.json
 php /tmp/apply_drupal10_composer_changes.php
 
@@ -101,4 +98,15 @@ git commit -am "Create new sites with Drupal 10"
 # updates it needs to apply
 git push --force drupal-10-start public:main
 
+
+
+### Now that we're finished with the D10 start state upstream, we want to move the release pointer
+# release-pointer needs to be moved to the end of the branch we started on ($CIRCLE_BRANCH)
+
 git checkout $CIRCLE_BRANCH
+
+# update the release-pointer
+git tag -f -m 'Last commit set on upstream repo' release-pointer HEAD
+
+# Push release-pointer
+git push -f origin release-pointer
