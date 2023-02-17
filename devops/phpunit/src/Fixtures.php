@@ -9,19 +9,20 @@ use Symfony\Component\Process\Process;
  */
 trait Fixtures
 {
-    protected $cleaner;
+    protected $fixtures;
     protected $sut;
 
     public function initFixtures() {
-        $this->cleaner = new Cleaner();
-        $this->cleaner->preventRegistration();
-        $tmpDir = $this->cleaner->tmpdir(sys_get_temp_dir(), 'sut');
-        $this->sut = $tmpDir . DIRECTORY_SEPARATOR . 'sut';
+        $this->fixtures = 'build/fixtures';
+        $fs = new Filesystem();
+        $fs->mkdir($this->fixtures);
+        $this->sut = $this->fixtures . DIRECTORY_SEPARATOR . 'sut';
     }
 
     public function cleanupFixtures(): void {
         if (!getenv('DRUPAL_COMPOSER_MANAGED_DIRTY')) {
-            $this->cleaner->clean();
+            $fs = new Filesystem();
+            $fs->remove($this->fixtures);
         }
     }
 
