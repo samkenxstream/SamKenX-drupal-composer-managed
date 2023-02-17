@@ -69,6 +69,17 @@ trait Fixtures
         $this->assertFileExists($this->sut . DIRECTORY_SEPARATOR . $file);
     }
 
+    public function assertProcessSuccessful(Process $process) {
+        $this->assertTrue($process->isSuccessful(),
+            'Command:' . PHP_EOL . PHP_EOL .
+            $process->getCommandLine() . PHP_EOL . PHP_EOL .
+            'Standard output:' . PHP_EOL . PHP_EOL .
+            $process->getOutput() . PHP_EOL . PHP_EOL .
+            'Standard Error:' . PHP_EOL . PHP_EOL .
+            $process->getErrorOutput()
+        );
+    }
+
     public function pregReplaceSutFile($regExp, $replace, $file) {
         $path = $this->sut . DIRECTORY_SEPARATOR . $file;
         $contents = file_get_contents($path);
@@ -85,8 +96,9 @@ trait Fixtures
     }
 
     protected function drush(string $command, array $args = []): Process {
-        $cmd = array_merge(['vendor/bin/drush', '--root=' . $this->sut, $command], $args);
+        $cmd = array_merge(['vendor/bin/drush', $command], $args);
         $process = new Process($cmd);
+        $process->setWorkingDirectory($this->sut);
         $process->run();
 
         return $process;
