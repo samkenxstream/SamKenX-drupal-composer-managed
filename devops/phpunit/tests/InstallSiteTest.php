@@ -25,10 +25,9 @@ class InstallSiteTest extends TestCase
         $process = $this->composer('install');
         $this->assertProcessSuccessful($process);
 
-        $db_url = getenv('DRUSH_SI_DB_URL') ?: 'mysql://root:@127.0.0.1/testdb';
-        $process = $this->drush('site:install', ["--db-url=$db_url", '--yes'
-]);
+        $process = $this->installDrupal();
         $this->assertProcessSuccessful($process);
+
         $process = $this->drush('status');
         $this->assertProcessSuccessful($process);
     }

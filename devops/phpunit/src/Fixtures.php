@@ -109,4 +109,16 @@ trait Fixtures
 
         return $process;
     }
+
+    protected function installDrupal(): Process {
+        if (getenv('DRUPAL_COMPOSER_MANAGED_SKIP_SQL_TESTS')) {
+            $this->markTestSkipped("Skipping tests that require mysql.");
+        }
+
+        $db_url = getenv('DRUSH_SI_DB_URL') ?: 'mysql://root:@127.0.0.1/testdb';
+        $process = $this->drush('site:install', ["--db-url=$db_url", '--yes'
+]);
+
+        return $process;
+    }
 }
