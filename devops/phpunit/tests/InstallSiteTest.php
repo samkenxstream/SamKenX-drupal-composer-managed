@@ -24,9 +24,9 @@ class InstallSiteTest extends TestCase
         $this->createSut();
         $process = $this->composer('install');
         $this->assertProcessSuccessful($process);
-        // We need to set up mysql for this to work, but once we do
-        // that, this should pretty much do the trick.
-        $process = $this->drush('site:install', ['--db-url=mysql://root:@127.0.0.1/testdb', '--yes'
+
+        $db_url = getenv('DRUSH_SI_DB_URL') ?: 'mysql://root:@127.0.0.1/testdb';
+        $process = $this->drush('site:install', ["--db-url=$db_url", '--yes'
 ]);
         $this->assertProcessSuccessful($process);
         $process = $this->drush('status');

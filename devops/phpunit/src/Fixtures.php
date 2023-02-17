@@ -20,9 +20,15 @@ trait Fixtures
     }
 
     public function cleanupFixtures(): void {
-        if (!getenv('DRUPAL_COMPOSER_MANAGED_DIRTY')) {
+        if (getenv('DRUPAL_COMPOSER_MANAGED_DIRTY')) {
+            return;
+        }
+
+        try {
             $fs = new Filesystem();
             $fs->remove($this->fixtures);
+        }
+        catch (\Exception $e) {
         }
     }
 

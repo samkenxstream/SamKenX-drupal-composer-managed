@@ -8,6 +8,10 @@ executors:
   php:
     docker:
       - image: cimg/php:8.1.14
+        environment:
+          - MYSQL_HOST=127.0.0.1
+          - DRUSH_SI_DB_URL=mysql://root:@127.0.0.1/testdb
+      - image: cimg/mysql:5.7.38
 
 jobs:
   deploy-public-upstream:
