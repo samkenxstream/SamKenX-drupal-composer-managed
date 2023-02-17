@@ -20,10 +20,18 @@ class InstallSiteTest extends TestCase
         $this->cleanupFixtures();
     }
 
+    /**
+     * Test to see if Drupal can be installed using the php files from
+     * the repository after `composer update` has been run
+     */
     public function testInstallDrupal9Site() {
         $this->createSut();
-        $process = $this->composer('install');
+
+        $this->assertSutFileNotContains('upstream-require', 'composer.json');
+
+        $process = $this->composer('config', ['platform.php']);
         $this->assertProcessSuccessful($process);
+        $this->assertStringContainsString('8.1.', $process->getOutput());
 
         $process = $this->composer('info', ['drupal/*']);
         $this->assertProcessSuccessful($process);
@@ -37,11 +45,19 @@ class InstallSiteTest extends TestCase
         $this->assertMatchesRegularExpression('/^drupal-version: 9/', $process->getOutput());
     }
 
+    /**
+     * Test to see if Drupal can be installed after running our build-time
+     * script to convert to Drupal 10
+     */
     public function testInstallDrupal10Site() {
         $this->createSut();
         $this->runPhpDevopsScript('apply_drupal10_composer_changes.php');
         $process = $this->composer('update');
         $this->assertProcessSuccessful($process);
+
+        $process = $this->composer('config', ['platform.php']);
+        $this->assertProcessSuccessful($process);
+        $this->assertStringContainsString('8.2.', $process->getOutput());
 
         $process = $this->composer('info', ['drupal/*']);
         $this->assertProcessSuccessful($process);
