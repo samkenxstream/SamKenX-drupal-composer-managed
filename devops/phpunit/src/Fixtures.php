@@ -121,4 +121,14 @@ trait Fixtures
 
         return $process;
     }
+
+    protected function runPhpDevopsScript($script_name) {
+        $devops_dir = dirname(__DIR__, 2);
+        $command = $devops_dir . '/scripts/' . $script_name;
+        $process = new Process(['php', $command]);
+        $process->setWorkingDirectory($this->sut);
+        $process->run();
+
+        return $process;
+    }
 }
