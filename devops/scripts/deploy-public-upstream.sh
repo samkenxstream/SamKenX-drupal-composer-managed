@@ -92,6 +92,7 @@ git push public public:main
 php /tmp/apply_drupal10_composer_changes.php
 
 composer update
+rm composer.lock
 
 git commit -am "Create new sites with Drupal 10"
 
