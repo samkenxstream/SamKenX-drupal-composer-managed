@@ -91,8 +91,7 @@ git push public public:main
 # put ^10 in the relevant places in composer.json
 php /tmp/apply_drupal10_composer_changes.php
 
-composer update
-rm composer.lock
+composer run-script pre-update-cmd
 
 git commit -am "Create new sites with Drupal 10"
 
