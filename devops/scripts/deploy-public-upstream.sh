@@ -91,6 +91,8 @@ git push public public:main
 # put ^10 in the relevant places in composer.json
 php /tmp/apply_drupal10_composer_changes.php
 
+composer update
+
 git commit -am "Create new sites with Drupal 10"
 
 # We need to rewrite history on the D10 upstream to keep the commit SHAs the same,
