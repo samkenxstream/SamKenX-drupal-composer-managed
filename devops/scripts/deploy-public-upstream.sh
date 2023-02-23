@@ -8,15 +8,10 @@ ssh -T git@github.com
 # Fail fast on any future errors.
 set -euo pipefail
 
-# copy our script so it's available to run after we change branches
-cp devops/scripts/apply_drupal10_composer_changes.php /tmp
-
 . devops/scripts/commit-type.sh
 
 git remote add public "$UPSTREAM_REPO_REMOTE_URL"
 git fetch public
-
-git remote add drupal-10-start "$DRUPAL_10_REPO_REMOTE_URL"
 
 git checkout "${CIRCLE_BRANCH}"
 
@@ -84,25 +79,6 @@ echo
 # Push to the public (pantheon-upstreams/drupal-composer-managed) repository
 git push public public:main
 
-
-### Prepare the drupal 10 start state upstream
-
-# run a php script to update to the drupal 10 start state
-# put ^10 in the relevant places in composer.json
-php /tmp/apply_drupal10_composer_changes.php
-
-composer run-script pre-update-cmd
-
-git commit -am "Create new sites with Drupal 10"
-
-# We need to rewrite history on the D10 upstream to keep the commit SHAs the same,
-# so that newly created sites don't see the diverged commits from the D9 upstream as
-# updates it needs to apply
-git push --force drupal-10-start public:main
-
-
-
-### Now that we're finished with the D10 start state upstream, we want to move the release pointer
 # release-pointer needs to be moved to the end of the branch we started on ($CIRCLE_BRANCH)
 
 git checkout $CIRCLE_BRANCH
