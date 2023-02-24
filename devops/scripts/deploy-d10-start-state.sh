@@ -8,7 +8,6 @@ ssh -T git@github.com
 # Fail fast on any future errors.
 set -euo pipefail
 
-
 ## I don't think we need to check out $CIRCLE_BRANCH ?
 # git checkout "${CIRCLE_BRANCH}"
 
@@ -21,7 +20,6 @@ git fetch public
 
 git remote add drupal-10-start "$DRUPAL_10_REPO_REMOTE_URL"
 git fetch drupal-10-start
-
 
 # the D10 'start state' upstream uses pantheon-upstreams/drupal-composer-managed as a starting point
 git checkout -b public --track public/main
@@ -43,4 +41,3 @@ git commit -am "Create new sites with Drupal 10" --author='Pantheon Automation <
 # so that newly created sites don't see the diverged commits from the D9 upstream as
 # updates it needs to apply
 git push --force drupal-10-start public:main
-
